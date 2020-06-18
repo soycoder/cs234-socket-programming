@@ -3,27 +3,37 @@ import java.net.*;
 
 public class Server {
 
+    private ServerSocket ss = null;
+    private static Socket s = null;
+    private Config c = null;
+
+    public Server() throws NumberFormatException, IOException {
+        this.c = new Config("server.config");
+        this.ss = new ServerSocket(Integer.parseInt(c.getPort()));
+        this.s = ss.accept();
+        System.out.println("Server Start");
+    }
+
+    public void checkAuth() {
+
+    }
+
     public static void main(String[] args) {
-        Config c = new Config("server.config");
+        Server server = new Server();
         try {
-            System.out.println("Server Start");
-            ServerSocket ss = new ServerSocket(Integer.parseInt(c.getPort()));
             while (true) {
-                Socket s = ss.accept();// establishes connection
                 DataInputStream dis = new DataInputStream(s.getInputStream());
                 String str = (String) dis.readUTF();
                 System.out.println("message= " + str);
                 try {
-                    System.out.println("path : "   + c.getAbsPath());
-                    FileWriter myWriter = new FileWriter(c.getAbsPath(),   true);
-                    // FileWriter myWriter = new FileWriter("message.txt", true);
-                    myWriter.write(str);
-                    myWriter.write("\r\n");
-                    myWriter.close();
-                    System.out.println("Successfully wrote to the file.");
+                    System.out.println("path : " + c.getAbsPath());
+                    FileWriter writer = new FileWriter(c.getAbsPath(), true);
+                    // FileWriter writer = new FileWriter("message.txt", true);
+                    writer.write(str);
+                    writer.write("\r\n");
+                    writer.close();
                 } catch (IOException e) {
-                    System.out.println("An error occurred.");
-                    e.printStackTrace();
+                    System.out.println(e);
                 }
             }
         } catch (Exception e) {
